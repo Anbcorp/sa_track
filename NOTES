@@ -1,0 +1,65 @@
+Sent by Sailaway2NMEA
+NMEA sent: 
+$SOL
+$GPGLL,4923.3051,N,0559.5999,W,191305.221,A*16
+$GPGGA,191305.221,4923.3051,N,0559.5999,W,6,4,0,0,M,,,,*1E
+$IIVHW,279,T,279,M,8.2,N,15,K*75
+$IIHDT,279,T*30
+$WIMWV,319,T,13.7,N,A*05
+$WIMWV,334,R,20.7,N,A*0C
+$SDDPT,105.00,0.00*53
+$SDDBT,344.49,f,105.00,M,57.41,F*0B
+$IIVTG,281,281,8.2,15.2*79
+$GPRMC,191305.221,A,4923.3051,N,0559.5999,W,8.2,281,301023,,,*11
+
+
+https://gpsd.gitlab.io/gpsd/NMEA.html#_apa_autopilot_sentence_a
+
+IDs
+
+GP -> GPS
+II -> Integrated Instruments
+WI -> Weather Instruments
+SD -> Depth sounder
+
+
+Sentences
+GLL : Latitude/Longitude + UTC of position $--GLL,ddmm.mm,a,dddmm.mm,a,hhmmss.ss,a*hh<CR><LF>
+Last 'A' is for 'A' valid, V invalid
+
+GGA : GPS Fix data, include number of satellites, height of antenna and Quality indicator (1 for GPS fix, 6 for dead reckoning)
+
+VHW : Water speed and Heading (STW/CTW)
+               True heading,T, Magnetic heading, M , STW knt, N, STW km/h, K
+        $--VHW,x.x,T,x.x,M,x.x,N,x.x,K*hh<CR><LF>
+VTG : Ground speed and heading (SOG/COG)
+        See VHW, it's the same but relative to ground
+
+For Sailaway, consider True heading == Magnetic heading
+
+HDT : Heading, true (do we really need this ?)
+
+MWV : wind speed and angle
+    Sailaway2NMEA send to sentences, one relative (apparent), one true
+           wind angle 0-359,R/T,wind speed,units(N/K/M),status(A/V)
+    $--MWV,x.x,a,x.x,a*hh<CR><LF>
+
+DPT Depth 
+DBT Depth below transducer
+
+RMC Recommend minimum navigation information
+
+
+
+Send by TCP
+
+Conventions
+
+Start with $, <comma separated sequence of fiels>, end with *<checksum>
+Checksum is 8-bit XOR of all chars in the sentence, excluding $ and *
+$<2 letters send ID><3 letters type code>
+
+lat/lon in DDDMM.mm format
+
+Sentences are terminated by <CR><LF> (lmao)
+maxlen 82 bytes
