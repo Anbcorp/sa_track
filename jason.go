@@ -62,24 +62,32 @@ type SASailStatus struct {
 	Vang              float64 `json:"vang"`              //0
 }
 
-func getFreshData() {
+func getFreshData() []SABoatStatus {
 	var str []SABoatStatus
 	err := requests.URL("http://srv.sailaway.world/cgi-bin/sailaway/APIBoatInfo.pl?usrnr=<redacted>&key=<redacted>").ToJSON(&str).Fetch(context.Background())
 	if err != nil {
 		fmt.Println("error: ", err)
 	}
+	return str
 }
 
-func main() {
+func getSavedData(filename string) []SABoatStatus {
 	// Read the JSON file
-	data, err := os.ReadFile("json/20231030_185101.json")
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		log.Fatal("Error reading JSON file:", err)
 	}
 
 	res := []SABoatStatus{}
 	json.Unmarshal(data, &res)
-	fmt.Println(res)
+	return res
+}
+
+func main() {
+
+	res := getFreshData()
+	//res := getSavedData("json/20231030_185101.json")
+	//fmt.Println(res)
 
 	// Look for my boats
 	myBoats := []string{"Volovan", "Jade Erre"}
