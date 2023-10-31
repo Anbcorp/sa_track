@@ -63,3 +63,20 @@ lat/lon in DDDMM.mm format
 
 Sentences are terminated by <CR><LF> (lmao)
 maxlen 82 bytes
+
+
+
+NMEA writer
+------------
+
+Given a boat type, each nmea_sentence can generate itself
+write_nmea(boat, list_of_sentences_type) {
+        for type in list of sentences types:
+                full message.append(type.sentence(boat))
+}
+
+List of Messages types, with options :
+"RMC,GGA,MWV.T,MWV.R" if a dot is present, it activates an options
+type, opt = string.split('.')
+m = new(type)
+m.FromBoat(boat, opt)

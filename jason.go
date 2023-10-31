@@ -89,6 +89,10 @@ func main() {
 	//res := getFreshData()
 	res := getSavedData("json/20231030_185101.json")
 	//fmt.Println(res)
+	/*file, _ := os.OpenFile("output.json", os.O_CREATE, os.ModePerm)
+	defer file.Close()
+	enc := json.NewEncoder(file)
+	enc.Encode(res)*/
 
 	// Look for my boats
 	myBoats := []string{"Volovan", "Jade Erre"}
@@ -122,7 +126,17 @@ func main() {
 		}
 	}
 
-	b := nmea.SABoat{Heading: 279, Stw: 8.2, Cog: 281, Sog: 8.2}
-	list := []string{"VHW", "VTG"}
+	b := nmea.SABoat{
+		Heading: 279,
+		Stw:     8.2,
+		Cog:     281,
+		Sog:     8.2,
+		Tws:     13.7,
+		Twd:     238,
+		Twa:     -41,
+		Awa:     -26,
+		Aws:     20.7,
+	}
+	list := []string{"VHW", "VTG", "MWV", "MWV.R"}
 	nmea.WriteMessage(b, list)
 }
