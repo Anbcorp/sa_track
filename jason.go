@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/carlmjohnson/requests"
+	"jason.go/nmea"
 )
 
 type SAUserBoatStatus struct {
@@ -85,8 +86,8 @@ func getSavedData(filename string) []SABoatStatus {
 
 func main() {
 
-	res := getFreshData()
-	//res := getSavedData("json/20231030_185101.json")
+	//res := getFreshData()
+	res := getSavedData("json/20231030_185101.json")
 	//fmt.Println(res)
 
 	// Look for my boats
@@ -120,4 +121,8 @@ func main() {
 			fmt.Println("-----------------------------------------------------------------------")
 		}
 	}
+
+	b := nmea.SABoat{Heading: 279, Stw: 8.2, Cog: 281, Sog: 8.2}
+	list := []string{"VHW", "VTG"}
+	nmea.WriteMessage(b, list)
 }
