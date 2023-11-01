@@ -128,12 +128,12 @@ func main() {
 	}
 
 	b := nmea.SABoat{
-		Heading:      279,
-		Stw:          8.2,
-		Cog:          281,
-		Sog:          8.2,
-		Tws:          13.7,
-		Twd:          238,
+		Heading: 279,
+		Stw:     8.2,
+		Cog:     281,
+		Sog:     8.2,
+		Tws:     13.7,
+		//Twd:          238,
 		Twa:          -41,
 		Awa:          -26,
 		Aws:          20.7,
