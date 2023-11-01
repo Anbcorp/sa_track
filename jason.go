@@ -8,6 +8,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/carlmjohnson/requests"
 	"jason.go/nmea"
@@ -89,10 +90,10 @@ func main() {
 	//res := getFreshData()
 	res := getSavedData("json/20231030_185101.json")
 	//fmt.Println(res)
-	/*file, _ := os.OpenFile("output.json", os.O_CREATE, os.ModePerm)
+	file, _ := os.OpenFile("output.json", os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	defer file.Close()
 	enc := json.NewEncoder(file)
-	enc.Encode(res)*/
+	enc.Encode(res)
 
 	// Look for my boats
 	myBoats := []string{"Volovan", "Jade Erre"}
@@ -127,16 +128,19 @@ func main() {
 	}
 
 	b := nmea.SABoat{
-		Heading: 279,
-		Stw:     8.2,
-		Cog:     281,
-		Sog:     8.2,
-		Tws:     13.7,
-		Twd:     238,
-		Twa:     -41,
-		Awa:     -26,
-		Aws:     20.7,
+		Heading:      279,
+		Stw:          8.2,
+		Cog:          281,
+		Sog:          8.2,
+		Tws:          13.7,
+		Twd:          238,
+		Twa:          -41,
+		Awa:          -26,
+		Aws:          20.7,
+		Latitude:     46.5086619986689,
+		Longitude:    -9.57924805707325,
+		PositionDate: time.Now().UTC(),
 	}
-	list := []string{"VHW", "VTG", "MWV", "MWV.R"}
+	list := []string{"GLL", "GGA", "VHW", "HDT", "MWV", "MWV.R", "VTG", "RMC"}
 	nmea.WriteMessage(b, list)
 }
