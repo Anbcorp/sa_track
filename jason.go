@@ -85,8 +85,7 @@ func getSavedData(filename string) []SABoatStatus {
 	return res
 }
 
-func main() {
-
+func printStatus() {
 	//res := getFreshData()
 	res := getSavedData("json/20231030_185101.json")
 	//fmt.Println(res)
@@ -143,4 +142,43 @@ func main() {
 	}
 	list := []string{"GLL", "GGA", "VHW", "HDT", "MWV", "MWV.R", "VTG", "RMC"}
 	nmea.WriteMessage(b, list)
+}
+
+func dumpBoats() {
+	res := getSavedData("json/20231030_185101.json")
+	// Look for my boats
+	myBoats := []string{"Volovan", "Jade Erre"}
+	for _, boat := range res {
+		if slices.Contains(myBoats, boat.Boatname) {
+			var sailName string
+			var raisedSails []string
+			for _, sail := range boat.Sails {
+				if sail.Furled < 1 && sail.Halyard > 0.9 {
+					if slices.Contains([]string{"Mainsail", "Mizzen"}, sail.Sail) {
+						// Look for reefs
+						reefs := sail.Reef1 + sail.Reef2 + sail.Reef3
+						sailName = fmt.Sprintf("%s-%d", sail.Sail, int(reefs))
+					} else {
+						sailName = sail.Sail
+					}
+					raisedSails = append(raisedSails, sailName)
+				}
+
+				/*print(f"stw:{boat.route.spd:0.1f} cog:{int(boat.route.cog)}")
+				print(f"tws:{boat.wind.tws:0.1f} twd:{boat.wind.twd:0.1f} twa:{boat.wind.twa:.1f}")
+				print(f"heel:{boat.attitude.heel:0.1f} keel:{boat.heel.keelangle} foils:{boat.heel.foils}")*/
+			}
+			fmt.Println(boat.Boatname)
+			fmt.Println()
+			fmt.Println(strings.Join(raisedSails, " / "))
+			fmt.Printf("stw:%.1f cog:%d\n", boat.Spd*3.6/1.852, int(boat.Cog))
+			fmt.Printf("tws:%.1f twd:%d twa:%d\n", boat.Tws*3.6/1.852, int(boat.Twd), int(boat.Twa))
+			fmt.Printf("heel:%.1f keel:%.1f\n", boat.Heeldegrees, boat.Keelangle)
+			fmt.Println("-----------------------------------------------------------------------")
+		}
+	}
+}
+
+func main() {
+	printStatus()
 }
