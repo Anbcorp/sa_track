@@ -1,3 +1,10 @@
 python/
 *.exe
 *.db
+jsonex.go
+output.json
+t.go
+xor.go
+DataExample
+json/20231030_185101.json
+json/20231101_000707.json
