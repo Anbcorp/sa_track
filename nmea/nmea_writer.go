@@ -4,24 +4,9 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-	"time"
-)
 
-// mokup
-type SABoat struct {
-	Heading      float64
-	Stw          float64
-	Cog          float64
-	Sog          float64
-	Tws          float64
-	Twd          float64
-	Twa          float64
-	Awa          float64
-	Aws          float64
-	Latitude     float64
-	Longitude    float64
-	PositionDate time.Time
-}
+	"jason.go/model"
+)
 
 func Sentence(n nmea_sentence) string {
 	message := fmt.Sprintf("%s,%s", n.Header(), n.Values())
@@ -36,7 +21,7 @@ func Checksum(s string) byte {
 	return result
 }
 
-func WriteMessage(b SABoat, seq []string) {
+func WriteMessage(b model.Boat, seq []string) {
 	// Always mark data as from a virtual origin
 	fmt.Println("$SOL")
 

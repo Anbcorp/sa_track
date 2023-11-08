@@ -3,6 +3,7 @@ package nmea
 import (
 	"fmt"
 
+	"jason.go/model"
 	"jason.go/util"
 )
 
@@ -21,7 +22,7 @@ func (mwv *MWV) SetOpt(b byte) {
 /*
 Wind angle is relative to the boat, from 0 to 359
 */
-func (mwv *MWV) FromBoat(b SABoat) {
+func (mwv *MWV) FromBoat(b model.Boat) {
 	mwv.id = "WI"
 	mwv.stype = "MWV"
 	switch mwv.wind_ref {

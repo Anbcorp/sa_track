@@ -3,6 +3,8 @@ package nmea
 import (
 	"fmt"
 	"reflect"
+
+	"jason.go/model"
 )
 
 var MessageTypes map[string]reflect.Type = make(map[string]reflect.Type)
@@ -22,7 +24,7 @@ func init() {
 
 // Interface for a sentence
 type nmea_sentence interface {
-	FromBoat(SABoat)
+	FromBoat(model.Boat)
 	Values() string
 	Header() string
 	SetOpt(byte)

@@ -10,8 +10,6 @@ import (
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
-
-	"jason.go/nmea"
 )
 
 const dbfile string = "sa_track.db"
@@ -150,8 +148,8 @@ func GetBoats() []*Boat {
 }
 
 func GetBoat(id int) {}
-func FindBoat(name string) nmea.SABoat {
-	return nmea.SABoat{}
+func FindBoat(name string) Boat {
+	return Boat{}
 }
 
 // BoatType
@@ -171,5 +169,5 @@ func NewSail()  {}
 func GetSails() {} // Load all sails at once, it's only for display
 
 // BoatState
-func UpdateBoatSate(b nmea.SABoat) {}
-func GetBoatLatestState(id int)    {}
+func UpdateBoatSate(b Boat)     {}
+func GetBoatLatestState(id int) {}

@@ -18,7 +18,7 @@ type BoatState struct {
 	Longitude    float64
 	Cog          float64
 	Sog          float64
-	Stw          float64
+	Spd          float64
 	Hdg          float64
 	Awa          float64
 	Aws          float64
@@ -41,8 +41,8 @@ type BoatState struct {
 // negative is furled
 type Sail struct {
 	Type      SailType
-	Reefs     int
-	FurledPct int
+	Reefs     int // 33/66/99
+	FurledPct int //
 }
 
 func (s *Sail) ToDB() float64 {
@@ -68,6 +68,6 @@ func SailFromDB(s float64) *Sail {
 }
 
 type Voyage struct {
-	Id   int
+	Id   int // if -1, ask the db first
 	Name string
 }

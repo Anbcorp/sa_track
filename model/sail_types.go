@@ -1,5 +1,7 @@
 package model
 
+import "errors"
+
 type SailType int
 
 const (
@@ -32,4 +34,16 @@ func init() {
 	SailTypes[S_N3] = "Nr.3"
 	SailTypes[S_N4] = "Nr.4"
 	SailTypes[S_STORM] = "Stormjib"
+}
+
+// TODO: Generify with BoattypeFromName
+func SailtypeFromName(name string) (btype SailType, err error) {
+	for t, v := range SailTypes {
+		if v == name {
+			btype = t
+			err = nil
+			return
+		}
+	}
+	return -1, errors.New("Unknown sail type")
 }

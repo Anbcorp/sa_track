@@ -2,6 +2,8 @@ package nmea
 
 import (
 	"fmt"
+
+	"jason.go/model"
 )
 
 // HDT - Heading True - Actual vessel heading in degrees true
@@ -10,10 +12,10 @@ type HDT struct {
 	heading float64
 }
 
-func (hdt *HDT) FromBoat(b SABoat) {
+func (hdt *HDT) FromBoat(b model.Boat) {
 	hdt.id = "II"
 	hdt.stype = "HDT"
-	hdt.heading = b.Heading
+	hdt.heading = b.Hdg
 }
 
 func (hdt *HDT) Values() string {

@@ -3,6 +3,7 @@ package nmea
 import (
 	"fmt"
 
+	"jason.go/model"
 	"jason.go/util"
 )
 
@@ -12,7 +13,7 @@ type GGA struct {
 	deadreck bool
 }
 
-func (gga *GGA) FromBoat(b SABoat) {
+func (gga *GGA) FromBoat(b model.Boat) {
 	gga.GLL.FromBoat(b)
 	gga.stype = "GGA"
 	gga.deadreck = false

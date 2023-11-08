@@ -3,6 +3,7 @@ package nmea
 import (
 	"fmt"
 
+	"jason.go/model"
 	"jason.go/util"
 )
 
@@ -13,11 +14,11 @@ type VHW struct {
 	stw     float64 // TODO: which unit do we use internally ?
 }
 
-func (vhw *VHW) FromBoat(b SABoat) {
+func (vhw *VHW) FromBoat(b model.Boat) {
 	vhw.id = "II"
 	vhw.stype = "VHW"
-	vhw.heading = b.Heading
-	vhw.stw = b.Stw
+	vhw.heading = b.Hdg
+	vhw.stw = b.Spd
 }
 
 func (vhw *VHW) Values() string {

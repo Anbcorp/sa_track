@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"jason.go/model"
 	"jason.go/util"
 )
 
@@ -17,7 +18,7 @@ type GLL struct {
 	utc       time.Time
 }
 
-func (gll *GLL) FromBoat(b SABoat) {
+func (gll *GLL) FromBoat(b model.Boat) {
 	gll.id = "GP"
 	gll.stype = "GLL"
 
@@ -37,7 +38,7 @@ func (gll *GLL) FromBoat(b SABoat) {
 		gll.lon_sign = 'E'
 	}
 
-	gll.utc = b.PositionDate
+	gll.utc = b.Timestamp
 }
 
 func (gll *GLL) Values() string {

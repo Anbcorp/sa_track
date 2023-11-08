@@ -3,6 +3,7 @@ package nmea
 import (
 	"fmt"
 
+	"jason.go/model"
 	"jason.go/util"
 )
 
@@ -13,7 +14,7 @@ type RMC struct {
 	Cog float64
 }
 
-func (rmc *RMC) FromBoat(b SABoat) {
+func (rmc *RMC) FromBoat(b model.Boat) {
 	rmc.GLL.FromBoat(b)
 	rmc.stype = "GGA"
 	rmc.Sog = b.Sog
