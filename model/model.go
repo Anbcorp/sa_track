@@ -1,7 +1,9 @@
 package model
 
 import (
+	"fmt"
 	"math"
+	"strings"
 	"time"
 )
 
@@ -53,6 +55,15 @@ func (s *Sail) ToDB() float64 {
 		reduction = s.Reefs
 	}
 	return float64(s.Type) + float64(reduction)/100
+}
+
+func SailsToDB(sails []Sail) string {
+	sailstrings := []string{}
+	for _, sail := range sails {
+		sailstrings = append(sailstrings, fmt.Sprintf("%.2f", sail.ToDB()))
+	}
+
+	return strings.Join(sailstrings, ",")
 }
 
 func SailFromDB(s float64) *Sail {

@@ -13,6 +13,7 @@ import (
 	"github.com/carlmjohnson/requests"
 	"jason.go/model"
 	"jason.go/nmea"
+	"jason.go/util"
 )
 
 func getFreshData() []model.SABoatStatus {
@@ -134,19 +135,38 @@ func dumpBoats() {
 }
 
 func testModel() {
+	defer util.TimeMe(time.Now(), "testModel")
 	//res := getFreshData()
-	res := getSavedData("json/20231108_125556.json")
+	res := getSavedData("json/20231108_135120.json")
 	now := time.Now()
+	var boats []*model.Boat
 	for _, rb := range res {
 		b := model.Json2model(rb, now)
-		fmt.Println(b)
-		list := []string{"GLL", "GGA", "VHW", "HDT", "MWV", "MWV.R", "VTG", "RMC"}
-		nmea.WriteMessage(*b, list)
+		//fmt.Println(rb.Boatname, rb.Boattype)
+		//list := []string{"GLL", "GGA", "VHW", "HDT", "MWV", "MWV.R", "VTG", "RMC"}
+		//nmea.WriteMessage(*b, list)
+		boats = append(boats, b)
 	}
 
+	model.OpenDB()
+	fmt.Println("here")
+	for _, b := range boats {
+		_, err := model.GetBoat(b.Ubtnr)
+		if err != nil {
+			fmt.Printf("Boat '%d: %s' not found, inserting...\n", b.Ubtnr, b.Name)
+			model.NewBoat(b)
+		} else {
+			fmt.Printf("Boat %d: %s found!\n", b.Ubtnr, b.Name)
+			if b.Spd > 0 {
+				model.NewState(b)
+			}
+		}
+	}
 }
 
 func main() {
+	//model.OpenDB()
+	//model.PopulateDB()
 	testModel()
 	//printStatus()
 }

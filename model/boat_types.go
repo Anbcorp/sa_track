@@ -9,15 +9,15 @@ type BoatType int
 
 const (
 	B_CRUISER38 BoatType = iota + 1
-	B_MINI
-	B_ROSE
-	B_CATA
-	B_PERF50
-	B_TRAINING
-	B_FOLKBOAT
-	B_RACER32
-	B_KETCH
-	B_IMOCA
+	B_MINI               // 2
+	B_ROSE               // 3
+	B_CATA               // 4
+	B_PERF50             // 5
+	B_TRAINING           // 6
+	B_FOLKBOAT           // 7
+	B_RACER32            // 8
+	B_KETCH              // 9
+	B_IMOCA              // 10
 )
 
 var BoatTypes map[BoatType]string = make(map[BoatType]string)

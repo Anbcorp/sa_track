@@ -16,7 +16,7 @@ type RMC struct {
 
 func (rmc *RMC) FromBoat(b model.Boat) {
 	rmc.GLL.FromBoat(b)
-	rmc.stype = "GGA"
+	rmc.stype = "RMC"
 	rmc.Sog = b.Sog
 	rmc.Cog = b.Cog
 }

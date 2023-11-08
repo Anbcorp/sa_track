@@ -1,11 +1,12 @@
 package model
 
 import (
-	"fmt"
 	"log"
 	"slices"
 	"strconv"
 	"time"
+
+	"jason.go/util"
 )
 
 type SAUserBoats struct {
@@ -76,7 +77,7 @@ func (s *SASailStatus) IsReefable() bool {
 func Json2model(b SABoatStatus, t time.Time) *Boat {
 	d := new(Boat)
 
-	d.Timestamp = t
+	d.Timestamp = t.UTC()
 	d.Ubtnr, _ = strconv.Atoi(b.Ubtnr)
 	d.Name = b.Boatname
 	// Convert from boat name to internal type
@@ -89,13 +90,13 @@ func Json2model(b SABoatStatus, t time.Time) *Boat {
 	d.Latitude = b.Latitude
 	d.Longitude = b.Longitude
 	d.Cog = b.Cog
-	d.Sog = b.Sog
-	d.Spd = b.Spd
+	d.Sog = util.Ms2Knt(b.Sog)
+	d.Spd = util.Ms2Knt(b.Spd)
 	d.Hdg = b.Hdg
 	d.Awa = b.Awa
-	d.Aws = b.Aws
+	d.Aws = util.Ms2Knt(b.Aws)
 	d.Twa = b.Twa
-	d.Tws = b.Tws
+	d.Tws = util.Ms2Knt(b.Tws)
 	// Twd is not stored
 	d.Divedegrees = b.Divedegrees
 	d.Drift = b.Drift
@@ -108,9 +109,7 @@ func Json2model(b SABoatStatus, t time.Time) *Boat {
 
 	// Active sails
 	for _, sail := range b.Sails {
-		fmt.Printf("testing %s\n", sail.Sail)
 		if sail.IsActive() {
-			fmt.Printf("Active\n")
 			dsail := new(Sail)
 
 			sailn, err := SailtypeFromName(sail.Sail)

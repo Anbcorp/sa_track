@@ -8,8 +8,10 @@ import (
 	"log"
 	"reflect"
 	"strings"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+	"jason.go/util"
 )
 
 const dbfile string = "sa_track.db"
@@ -17,6 +19,7 @@ const dbfile string = "sa_track.db"
 var dbHandle *sql.DB
 
 func OpenDB() {
+	defer util.TimeMe(time.Now(), "OpenDB")
 	var err error
 	dbHandle, err = sql.Open("sqlite3", dbfile)
 	if err != nil {
@@ -32,21 +35,22 @@ func newTx() *sql.Tx {
 	return tx
 }
 
-func execInsertQuery(query string, params ...any) {
+func execInsertQuery(query string, params ...any) error {
 	tx := newTx()
 	stmt, err := tx.Prepare(query)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(params)
+	_, err = stmt.Exec(params...)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	err = tx.Commit()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
 
 func execSelectQuery(query string, params ...any) *sql.Rows {
@@ -54,12 +58,22 @@ func execSelectQuery(query string, params ...any) *sql.Rows {
 	if err != nil {
 		log.Fatal(err)
 	}
-	rows, err := stmt.Query(params)
+	rows, err := stmt.Query(params...)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	return rows
+}
+
+func execSelectQueryRow(query string, params ...any) *sql.Row {
+	stmt, err := dbHandle.Prepare(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	row := stmt.QueryRow(params...)
+
+	return row
 }
 
 func byte2string(b []byte) string {
@@ -128,8 +142,11 @@ func structScan(rows *sql.Rows, model interface{}) error {
 }
 
 // Boat
-func NewBoat(id int, name string, boat_type int) {
-	execInsertQuery(q_NEWBOAT, id, name, boat_type)
+func NewBoat(b *Boat) {
+	err := execInsertQuery(q_NEWBOAT, b.Ubtnr, b.Name, b.Type)
+	if err != nil {
+		log.Fatal(fmt.Sprintf("model.NewBoat: %s", err))
+	}
 }
 
 func GetBoats() []*Boat {
@@ -147,14 +164,63 @@ func GetBoats() []*Boat {
 	return boats
 }
 
-func GetBoat(id int) {}
-func FindBoat(name string) Boat {
-	return Boat{}
+func GetBoat(ubtnr int) (b *Boat, err error) {
+	row := execSelectQueryRow(q_GETBOAT, ubtnr)
+	boat := new(Boat)
+	err = row.Scan(&boat.Ubtnr, &boat.Name, &boat.Type)
+	if err == sql.ErrNoRows {
+		return nil, err
+	} else if err != nil {
+		log.Fatal(fmt.Sprintf("model.GetBoat: %s", err))
+	}
+
+	return boat, nil
+}
+
+func FindBoat(name string) (b Boat, err error) {
+	return Boat{}, nil
 }
 
 // BoatType
-func NewBoatType() {
+func NewBoatType(id int, name string) {
+	err := execInsertQuery(q_NEWBOATTYPE, id, name)
+	if err != nil {
+		log.Fatal(fmt.Sprintf("model.NewBoatType: %s", err))
+	}
+}
 
+// Check if all boat and sail types are set in the DB
+func PopulateDB() {
+	log.Println("PopulateDB: start")
+	for boattype, typename := range BoatTypes {
+		log.Printf("PopulateDB-Boats: %s...", typename)
+		var bt int
+		var btn string
+		row := execSelectQueryRow("SELECT id, name FROM boat_type where id=?", boattype)
+		err := row.Scan(&bt, &btn)
+		if err == sql.ErrNoRows {
+			log.Printf("inserting...")
+			NewBoatType(int(boattype), typename)
+		} else if err != nil {
+			log.Fatal(fmt.Sprintf("model.PopulateDB: %s", err))
+		}
+		log.Println("OK!")
+	}
+	for sailtype, sailname := range SailTypes {
+		log.Printf("PopulateDB-Sails: %s...", sailname)
+		var st int
+		var sn string
+		row := execSelectQueryRow("SELECT id, name FROM sail where id=?", sailtype)
+		err := row.Scan(&st, &sn)
+		if err == sql.ErrNoRows {
+			log.Printf("inserting...")
+			NewSail(int(sailtype), sailname)
+		} else if err != nil {
+			log.Fatal(fmt.Sprintf("model.PopulateDB: %s", err))
+		}
+		log.Println("OK!")
+	}
+	log.Println("PopulateDB: finished!")
 }
 
 // Voyage
@@ -165,9 +231,23 @@ func GetVoyage(id int) {}
 //func FindVoyage(name string) {}
 
 // Sail
-func NewSail()  {}
+func NewSail(id int, name string) {
+	err := execInsertQuery(q_NEWSAILTYPE, id, name)
+	if err != nil {
+		log.Fatal(fmt.Sprintf("model.NewSailType: %s", err))
+	}
+}
 func GetSails() {} // Load all sails at once, it's only for display
 
 // BoatState
-func UpdateBoatSate(b Boat)     {}
+func NewState(b *Boat) {
+	log.Println(b.ActiveSails, SailsToDB(b.ActiveSails))
+	err := execInsertQuery(q_NEWSTATE,
+		b.Timestamp, b.Ubtnr, b.Voyage.Id, b.Latitude, b.Longitude, b.Sog, b.Cog, b.Spd, b.Hdg, b.Awa, b.Aws,
+		b.Twa, b.Tws, b.Divedegrees, b.Drift, b.Foilleft, b.Foilright, b.Heeldegrees, b.Keelangle,
+		b.Waterballast, b.Weatherhelm, SailsToDB(b.ActiveSails))
+	if err != nil {
+		log.Fatal(fmt.Sprintf("model.NewState: %s", err))
+	}
+}
 func GetBoatLatestState(id int) {}

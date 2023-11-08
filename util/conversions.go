@@ -29,7 +29,7 @@ func Wind2Angle(dir float64) float64 {
 // HHmmss.ss
 func NMEATimestamp(timestamp time.Time) string {
 	// Golang way of formatting date is probably the worst I've ever seen, ugh...
-	return timestamp.Format("150405.00")
+	return timestamp.Format("150405.000")
 }
 
 // Format a time.Time to NMEA RMC date
