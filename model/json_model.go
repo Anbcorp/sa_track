@@ -17,7 +17,7 @@ type SABoatStatus struct {
 	Awa             float64        `json:"awa"`             //-128.044
 	Aws             float64        `json:"aws"`             //4.8431
 	Backstay        float64        `json:"backstay"`        //0
-	Boatname        string         `json:"boatname"`        //"Jade Erre"
+	Boatname        string         `json:"boatname"`        //"MyBoat"
 	Boattype        string         `json:"boattype"`        //"45' Ketch"
 	Cog             float64        `json:"cog"`             //200.456
 	Divedegrees     float64        `json:"divedegrees"`     //-0.0434
@@ -38,7 +38,7 @@ type SABoatStatus struct {
 	Twd             float64        `json:"twd"`             //51.0694
 	Tws             float64        `json:"tws"`             //6.8802
 	Ubtnr           string         `json:"ubtnr"`           //"115636"
-	Voyage          string         `json:"voyage"`          //"Tj\u00f8rv\u00e5g, M\u00f8re og Romsdal, Norway -> Unknown"
+	Voyage          string         `json:"voyage"`          //"Shire -> Mordor"
 	Waterballast    float64        `json:"waterballast"`    //-0.982885
 	Weatherhelm     float64        `json:"weatherhelm"`     //-0.1063
 }
