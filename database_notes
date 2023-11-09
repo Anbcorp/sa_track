@@ -51,12 +51,10 @@ Tables :
 DB Create :
 BEGIN TRANSACTION;
 CREATE TABLE boat_type(id int primary_key, name text);
-INSERT INTO boat_type VALUES(1,'50 perf');
 CREATE TABLE boat(id int primary key, name text, type_id references boat_type (id));
-INSERT INTO boat VALUES(107196,'Volovan',1);
 CREATE TABLE voyage(id int primary key, boat_id references boat (id), name text);
 CREATE TABLE sail(id int primary key, name text);
-CREATE TABLE boat_state(id int primary key, timestamp real, boat_id references boat(id), voyage_id references voyage(id), latitude real, longitude real, sog real, cog real, stw real, hdg real, awa real, aws real, twa real, tws real, divedegrees real,
-drift real, foilleft real, foilright real, heeldgrees real, keelangle real, waterballast real, weatherhelm real, sails text);
+CREATE TABLE boat_state(id integer primary key autoincrement, timestamp real, boat_id references boat(id), voyage_id references voyage(id), latitude real, longitude real, sog real, cog real, stw real, hdg real, awa real, aws real, twa real, tws real, 
+divedegrees real, drift real, foilleft real, foilright real, heeldegrees real, keelangle real, waterballast real, weatherhelm real, sails text);
 COMMIT;
 
