@@ -11,14 +11,25 @@ import (
 	"time"
 
 	"github.com/carlmjohnson/requests"
+	"gopkg.in/yaml.v3"
 	"jason.go/model"
 	"jason.go/nmea"
 	"jason.go/util"
 )
 
+type Config struct {
+	Usrnr  int64  `yaml:"usrnr"`
+	Apikey string `yaml:"apikey"`
+}
+
+var config Config
+
+const SAAPI_URL string = "http://srv.sailaway.world/cgi-bin/sailaway/APIBoatInfo.pl"
+
 func getFreshData() []model.SABoatStatus {
 	var str []model.SABoatStatus
-	err := requests.URL("http://srv.sailaway.world/cgi-bin/sailaway/APIBoatInfo.pl?usrnr=<redacted>&key=<redacted>").ToJSON(&str).Fetch(context.Background())
+	url := fmt.Sprintf("%s?usrnr=%d&key=%s", SAAPI_URL, config.Usrnr, config.Apikey)
+	err := requests.URL(url).ToJSON(&str).Fetch(context.Background())
 	if err != nil {
 		fmt.Println("error: ", err)
 	}
@@ -164,9 +175,20 @@ func testModel() {
 	}
 }
 
+func getConfig() {
+	confdata, err := os.ReadFile("sa_track.yaml")
+	if err != nil {
+		log.Fatal("Error reading config file:", err)
+	}
+	yaml.Unmarshal(confdata, &config)
+}
+
 func main() {
+	getConfig()
+	fmt.Println(config)
+	getFreshData()
 	//model.OpenDB()
 	//model.PopulateDB()
-	testModel()
+	//testModel()
 	//printStatus()
 }

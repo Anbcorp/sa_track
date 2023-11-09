@@ -1,4 +1,5 @@
 python/
+sa_track.yaml
 *.exe
 *.db
 jsonex.go
