@@ -16,19 +16,19 @@ import (
 
 const dbfile string = "sa_track.db"
 
-var dbHandle *sql.DB
+var DbHandle *sql.DB
 
 func OpenDB() {
 	defer util.TimeMe(time.Now(), "OpenDB")
 	var err error
-	dbHandle, err = sql.Open("sqlite3", dbfile)
+	DbHandle, err = sql.Open("sqlite3", dbfile)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func newTx() *sql.Tx {
-	tx, err := dbHandle.Begin()
+	tx, err := DbHandle.Begin()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,7 +54,7 @@ func execInsertQuery(query string, params ...any) error {
 }
 
 func execSelectQuery(query string, params ...any) *sql.Rows {
-	stmt, err := dbHandle.Prepare(query)
+	stmt, err := DbHandle.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,7 +67,7 @@ func execSelectQuery(query string, params ...any) *sql.Rows {
 }
 
 func execSelectQueryRow(query string, params ...any) *sql.Row {
-	stmt, err := dbHandle.Prepare(query)
+	stmt, err := DbHandle.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -241,7 +241,6 @@ func GetSails() {} // Load all sails at once, it's only for display
 
 // BoatState
 func NewState(b *Boat) {
-	log.Println(b.ActiveSails, SailsToDB(b.ActiveSails))
 	err := execInsertQuery(q_NEWSTATE,
 		b.Timestamp, b.Ubtnr, b.Voyage.Id, b.Latitude, b.Longitude, b.Sog, b.Cog, b.Spd, b.Hdg, b.Awa, b.Aws,
 		b.Twa, b.Tws, b.Divedegrees, b.Drift, b.Foilleft, b.Foilright, b.Heeldegrees, b.Keelangle,

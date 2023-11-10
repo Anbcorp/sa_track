@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"slices"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/carlmjohnson/requests"
@@ -183,12 +185,78 @@ func getConfig() {
 	yaml.Unmarshal(confdata, &config)
 }
 
+func refreshBoats(t time.Time, boatnames []string) {
+	fmt.Printf("@%s: refreshing ", t.Format("15:04:05"))
+	res := getFreshData()
+	var boats []*model.Boat
+	for _, rb := range res {
+		if slices.Contains(boatnames, rb.Boatname) {
+			b := model.Json2model(rb, t)
+			boats = append(boats, b)
+		}
+	}
+	for _, b := range boats {
+		fmt.Printf("%s ", b.Name)
+		_, err := model.GetBoat(b.Ubtnr)
+		if err != nil {
+			//fmt.Printf("Boat '%d: %s' not found, inserting...\n", b.Ubtnr, b.Name)
+			model.NewBoat(b)
+		}
+		if b.Spd > 0 {
+			model.NewState(b)
+		}
+	}
+	fmt.Printf("done\n")
+
+}
+
+func PrintBoats(boats []string) {
+	fmt.Println(boats)
+}
+
 func main() {
 	getConfig()
-	fmt.Println(config)
-	getFreshData()
-	//model.OpenDB()
+	//fmt.Println(config)
+	//getFreshData()
 	//model.PopulateDB()
 	//testModel()
 	//printStatus()
+
+	model.OpenDB()
+	defer model.DbHandle.Close()
+
+	done := make(chan bool)
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
+
+	go func() {
+		for {
+			select {
+			case s := <-signalChan:
+				switch s {
+				case syscall.SIGINT, syscall.SIGTERM:
+					log.Printf("Bye... o7")
+					model.DbHandle.Close()
+					done <- true
+					os.Exit(1)
+				case syscall.SIGHUP:
+					PrintBoats([]string{"Volovan", "Jade erre", "Challenge Accepted"})
+				}
+			}
+		}
+	}()
+
+	defer signal.Stop(signalChan)
+	ticker := time.NewTicker(10 * time.Minute)
+	refreshBoats(time.Now(), []string{"Volovan", "Jade Erre", "Challenge Accepted"})
+	for {
+		select {
+		case <-done:
+			ticker.Stop()
+			break
+		case t := <-ticker.C:
+			refreshBoats(t, []string{"Volovan", "Jade Erre", "Challenge Accepted"})
+		}
+	}
+
 }
