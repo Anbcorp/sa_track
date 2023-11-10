@@ -186,7 +186,8 @@ func getConfig() {
 }
 
 func refreshBoats(t time.Time, boatnames []string) {
-	fmt.Printf("@%s: refreshing ", t.Format("15:04:05"))
+	defer util.TimeMe(t, "refreshBoats")
+	fmt.Printf("%s refreshing ", t.Format("2006/01/02 15:04:05"))
 	res := getFreshData()
 	var boats []*model.Boat
 	for _, rb := range res {
@@ -206,7 +207,7 @@ func refreshBoats(t time.Time, boatnames []string) {
 			model.NewState(b)
 		}
 	}
-	fmt.Printf("done\n")
+	fmt.Printf("\n")
 
 }
 
