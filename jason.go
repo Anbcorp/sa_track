@@ -36,8 +36,11 @@ func getFreshData() []model.SABoatStatus {
 		fmt.Println("error: ", err)
 	}
 	jsonname := fmt.Sprintf("json/%s.json", time.Now().Format("20060102_150405"))
-	file, _ := os.OpenFile(jsonname, os.O_CREATE|os.O_TRUNC, os.ModePerm)
-	defer file.Close()
+	file, _ := os.OpenFile(jsonname, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, os.ModePerm)
+	defer func() {
+		file.Sync()
+		file.Close()
+	}()
 	enc := json.NewEncoder(file)
 	enc.Encode(str)
 	return str
@@ -188,6 +191,7 @@ func getConfig() {
 func refreshBoats(t time.Time, boatnames []string) {
 	defer util.TimeMe(t, "refreshBoats")
 	fmt.Printf("%s refreshing ", t.Format("2006/01/02 15:04:05"))
+	//res := getSavedData("json/20231110_205644.json")
 	res := getFreshData()
 	var boats []*model.Boat
 	for _, rb := range res {
@@ -248,7 +252,7 @@ func main() {
 	}()
 
 	defer signal.Stop(signalChan)
-	ticker := time.NewTicker(10 * time.Minute)
+	ticker := time.NewTicker(10 * time.Second)
 	refreshBoats(time.Now(), []string{"Volovan", "Jade Erre", "Challenge Accepted"})
 	for {
 		select {

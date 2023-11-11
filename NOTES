@@ -105,5 +105,7 @@ $WIMWV,258,R,7.8,N,A*3D
 $IIVTG,191,T,191,M,6.5,N,12.1,K*68
 $GPGGA,135120.04,1629.1118,N,2236.0056,W,6.5,191,081123,,,*53
 
-TODO:
-- speed units coherence
+DB scaling :
+about 200 bytes per boat position
+so 200 bytes / 10 min per boat
+assuming a boat never stops through a whole year, thats 365*24*6*200 ~ 10MB per boat per year
