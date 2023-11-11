@@ -252,7 +252,7 @@ func main() {
 	}()
 
 	defer signal.Stop(signalChan)
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(10 * time.Minute)
 	refreshBoats(time.Now(), []string{"Volovan", "Jade Erre", "Challenge Accepted"})
 	for {
 		select {
