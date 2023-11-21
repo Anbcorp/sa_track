@@ -249,4 +249,23 @@ func NewState(b *Boat) {
 		log.Fatal(fmt.Sprintf("model.NewState: %s", err))
 	}
 }
-func GetBoatLatestState(id int) {}
+func BoatRefresh(boat *Boat) error {
+	row := execSelectQueryRow(q_LASTBOATSTATE, boat.Ubtnr)
+	b := new(Boat)
+	var dbsails string
+	var dbid int
+	err := row.Scan(&dbid, &b.Ubtnr, &b.Latitude, &b.Longitude, &b.Sog, &b.Cog, &b.Spd, &b.Hdg, &b.Awa, &b.Aws, &b.Twa, &b.Tws, &dbsails)
+	if err == sql.ErrNoRows {
+		return err
+	} else if err != nil {
+		log.Fatal(fmt.Sprintf("model.GetBoat: %s", err))
+	}
+	if boat.Ubtnr != b.Ubtnr {
+		// Db data is not corrupted somehow ?!
+		log.Fatal(fmt.Sprintf("Boat id mismatch in db : %s(%s) has id %d, but got %s(%s) with id %d\n",
+			b.Name, BoatTypes[b.Type], b.Ubtnr,
+			boat.Name, BoatTypes[boat.Type], boat.Ubtnr))
+	}
+	boat.BoatState = b.BoatState
+	return nil
+}

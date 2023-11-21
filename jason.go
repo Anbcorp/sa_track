@@ -190,28 +190,32 @@ func getConfig() {
 
 func refreshBoats(t time.Time, boatnames []string) {
 	defer util.TimeMe(t, "refreshBoats")
-	fmt.Printf("%s refreshing ", t.Format("2006/01/02 15:04:05"))
+	log.Print("refreshing ", t.Format("2006/01/02 15:04:05"))
 	//res := getSavedData("json/20231110_205644.json")
 	res := getFreshData()
 	var boats []*model.Boat
 	for _, rb := range res {
-		if slices.Contains(boatnames, rb.Boatname) {
+		if true { //&& slices.Contains(boatnames, rb.Boatname) {
 			b := model.Json2model(rb, t)
 			boats = append(boats, b)
 		}
 	}
 	for _, b := range boats {
-		fmt.Printf("%s ", b.Name)
-		_, err := model.GetBoat(b.Ubtnr)
+		oldboat, err := model.GetBoat(b.Ubtnr)
 		if err != nil {
 			//fmt.Printf("Boat '%d: %s' not found, inserting...\n", b.Ubtnr, b.Name)
 			model.NewBoat(b)
 		}
-		if b.Spd > 0 {
+
+		model.BoatRefresh(oldboat)
+		if b.Latitude == oldboat.Latitude && b.Longitude == oldboat.Longitude {
+			// Boat didn't move, skip
+			log.Printf("%s didn't move, skipping...\n", b.Name)
+		} else {
+			log.Printf("%s at %.5f,%.5f heading %d at %.1f knt\n", b.Name, b.Latitude, b.Longitude, int(b.Hdg), b.Spd)
 			model.NewState(b)
 		}
 	}
-	fmt.Printf("\n")
 
 }
 
@@ -261,6 +265,7 @@ func main() {
 			break
 		case t := <-ticker.C:
 			refreshBoats(t, []string{"Volovan", "Jade Erre", "Challenge Accepted"})
+			log.Print("\n==========> Waiting for next tick ... <==========\n")
 		}
 	}
 
